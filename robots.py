@@ -96,7 +96,7 @@ class Robot:
         :return: 
         """
         # drop pi/4
-        direction = (float(direction) + 270) % 360
+        direction = float(direction)
         speeds = SpeedTable.from_angle(
             angle=direction, speed=float(speed))
         self.set_motors(**speeds)

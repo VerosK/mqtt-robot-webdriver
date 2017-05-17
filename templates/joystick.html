@@ -36,12 +36,15 @@
     }
     function start(evt, nipple) {
          is_active = true;
-	 jQuery("#debug").css('background-color', 'red');
+        jQuery("#debug").css('background-color', 'red');
          setTimeout(updateDir, 10);
     }
     function move(ev, nipple) {
          var k = nipple;
-         direction = { distance: nipple.distance, degree: nipple.angle.degree }; 
+         direction = {
+             distance: nipple.distance,
+             degree: 360 - ((nipple.angle.degree +270) % 360)
+         };
          jQuery("#debug").html("<pre>"+JSON.stringify(direction, null, 4)+"</pre>");
     }
     manager.on('start', start).on('end', stop).on('move', move);
