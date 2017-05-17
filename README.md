@@ -11,3 +11,6 @@ How to start:
  * Run `main.py`
 
  * Use joystick on http://127.0.0.1:5000/
+
+
+Micropython part is available on https://github.com/VerosK/mqtt-robot-nodemcu
