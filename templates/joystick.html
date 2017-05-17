@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Robot</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0"/>
+    <script src="/static/jquery.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin="anonymous"></script>
+  <link href='/static/style.css' rel='stylesheet' type='text/css' media='screen'>
+  </head>   
+  <body id="body">
+   <script src="/static/nipplejs.min.js"></script>
+   <script>
+    var manager = nipplejs.create({
+        color: '#00FFFF',
+        size: 200,
+        mode: 'static',
+        identifier: 0,
+        position: { left: '50%', top: '50%' },
+    });
+    var direction = {};
+    var is_active = false;
+    function stop(evt, nipple) {
+         is_active = false;
+         direction = {distance: 0, degree:0};
+	 jQuery("#debug").css('background-color', 'green');
+    }
+    function updateDir() {
+    console.log(direction);
+    jQuery.ajax('', {   // post to local page
+              type: 'POST', 
+              data: direction,
+              dataType: 'json',
+              complete: function() {
+                 if (is_active) setTimeout(updateDir, 100); },
+             });
+    }
+    function start(evt, nipple) {
+         is_active = true;
+	 jQuery("#debug").css('background-color', 'red');
+         setTimeout(updateDir, 10);
+    }
+    function move(ev, nipple) {
+         var k = nipple;
+         direction = { distance: nipple.distance, degree: nipple.angle.degree }; 
+         jQuery("#debug").html("<pre>"+JSON.stringify(direction, null, 4)+"</pre>");
+    }
+    manager.on('start', start).on('end', stop).on('move', move);
+  
+  </script>
+    <div id="debug">
+      <a href="https://yoannmoinet.github.io/nipplejs/">Nipple documentation</a>
+    </div>
+  </body>
+</html>

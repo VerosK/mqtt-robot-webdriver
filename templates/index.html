@@ -1,0 +1,18 @@
+<html>
+<head>
+    <title>Robots</title>
+</head>
+<body>
+<h2>Robots</h2>
+<table border="1">
+    <tr><td>id</td><td>State</td></tr>
+{% for robot in robots %}
+    <tr>
+    <th><a href="/robot/{{ robot.id }}/">{{ robot.id }}</a></th>
+    <td>{{ 'ON' if robot.online else 'Off' }}
+    </td>
+    </tr>
+{% endfor %}
+</table>
+</body>
+</html>

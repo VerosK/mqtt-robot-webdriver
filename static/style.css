@@ -1,0 +1,21 @@
+html {
+    height: 100%;
+}
+
+body {
+    font: 12px/15px Consolas, Verdana;
+    margin: 10px;
+    background: #000;
+    color: #fff;
+    height: 100%;
+    overflow: hidden;
+}
+
+#debug {
+    position: absolute;
+    bottom: 1px;
+    left: 2px;
+    width: 20em;
+    height: 6em;
+    background-color: #101010;
+}
