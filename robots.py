@@ -21,6 +21,7 @@ class RobotGroup:
                                         mqtt_config['password'])
         mqtt_client.connect(host=mqtt_config['host'])
         logger.info("MQTT connecting to %s", mqtt_config['host'])
+        mqtt_client.subscribe('/robot/+/$online$')
 
         self.mqtt_client = mqtt_client
         self.mqtt_client.message_callback_add(
@@ -101,6 +102,7 @@ class Robot:
         self.set_motors(**speeds)
 
     def set_motors(self, left, right):
+        left,right = int(left),int(right)
         logger.info("left=%s right=%s", left, right)
         self.mqtt_client.publish(
             "/robot/{}/motors".format(self.id),
