@@ -1,6 +1,9 @@
+from __future__ import unicode_literals
+
 import paho.mqtt.client as mqtt
 import logging
 from interpolate import Interpolation
+from datetime import datetime, timedelta
 
 logger = logging.getLogger('robotgroup')
 
@@ -9,7 +12,8 @@ class RobotGroup:
         self.mqtt_client = None
         self.config = config
         self.connect_mqtt()
-        self._robots = {}
+        self._robots = {} # robot names
+        self._last_seen = {}  # datetime or None
 
 
     def connect_mqtt(self):
@@ -22,18 +26,36 @@ class RobotGroup:
         mqtt_client.connect(host=mqtt_config['host'])
         logger.info("MQTT connecting to %s", mqtt_config['host'])
         mqtt_client.subscribe('/robot/+/$online$')
+        mqtt_client.subscribe('/robot/+/$name$')
 
         self.mqtt_client = mqtt_client
         self.mqtt_client.message_callback_add(
                 "/robot/+/$online$", self._on_online)
+        self.mqtt_client.message_callback_add(
+                "/robot/+/$name$", self._on_name)
+
+    def _on_name(self, client, userdata, msg):
+        logging.debug('Got name message: %s: %s',
+                            msg.topic, msg.payload)
+        parts = msg.topic.split('/')
+        robot_id = parts[2]
+        logging.info("Robot #%s name is %s", robot_id, repr(msg.payload))
+        try:
+            self._robots[robot_id] = msg.payload.decode('us-ascii')
+        except UnicodeDecodeError:
+            self._robots[robot_id] = 'WFT'
+
 
     def _on_online(self, client, userdata, msg):
-        logging.debug('Got message: %s: %s',
+        logging.debug('Got alive message: %s: %s',
                             msg.topic, msg.payload)
         parts = msg.topic.split('/')
         robot_id = parts[2]
         logging.info("Robot #%s state is %i", robot_id, int(msg.payload))
-        self._robots[robot_id] = int(msg.payload)
+        if int(msg.payload) == 0:
+            self._last_seen[robot_id] = None
+        else:
+            self._last_seen[robot_id] = datetime.now()
 
     def run(self):
         logger.info("Starting mqtt background loop")
@@ -42,15 +64,17 @@ class RobotGroup:
 
 
     def robot_list(self):
-        for id,online in self._robots.items():
-            yield self.get_robot(id=id, online=online)
+        for id in sorted(self._last_seen):
+            yield self.get_robot(id=id)
 
     def get_robot(self, id, online=None):
         if online is None:
-            online = self._robots[id]
+            online = self._last_seen[id]
         return Robot(id=id,
                      mqtt_client=self.mqtt_client,
-                     is_online=online)
+                     is_online=online,
+                     name=self._robots.get(id, None),
+                     last_seen=self._last_seen[id])
 
 # inspired by http://stackoverflow.com/a/17115473/7554925
 
@@ -82,10 +106,24 @@ class SpeedTable:
         return dict(left=left, right=right)
 
 class Robot:
-    def __init__(self, id, mqtt_client, is_online=True):
+    def __init__(self, id, mqtt_client, is_online=True, name=None, last_seen=None):
         self.id = id
         self.mqtt_client = mqtt_client
         self.online = is_online
+        self.last_seen = last_seen
+        self.name = name or 'Unnamed'
+
+    @property
+    def last_seen_str(self):
+        if not self.last_seen:
+            return 'disconnected'
+        delta = datetime.now() - self.last_seen
+        print(self.last_seen, delta)
+        if delta < timedelta(seconds=60):
+            return 'alive'
+        if delta < timedelta(minutes=30):
+            return 'before {} minutes'.format(delta.seconds // 60)
+        return 'disconnected (probably)'
 
     def set_direction(self, direction, speed):
         """

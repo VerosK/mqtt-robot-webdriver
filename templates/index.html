@@ -11,8 +11,8 @@
 {% for robot in robots %}
     <tr>
     <th><a href="/robot/{{ robot.id }}/">{{ robot.id }}</a></th>
-    <td>{{ 'ON' if robot.online else 'Off' }}
-    </td>
+    <td>{{ robot.name }}</td>
+    <td>{{ robot.last_seen_str }}</td>
     </tr>
 {% endfor %}
 </table>
