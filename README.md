@@ -14,3 +14,7 @@ How to start:
 
 
 Micropython part is available on https://github.com/VerosK/mqtt-robot-nodemcu
+
+## `curl` shortcut 
+
+    curl http://127.0.0.1:5000/robot/178c2300/ -X POST --form left=100 --form right=100

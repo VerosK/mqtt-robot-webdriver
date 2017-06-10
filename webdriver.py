@@ -51,7 +51,11 @@ def robot_page(robot_id):
         data = request.form
 
         robot = robot_group.get_robot(robot_id)
-        robot.set_direction(direction=data['degree'], speed=data['distance'])
+        print(data)
+        if 'left' in data and 'right' in data:
+            robot.set_motors(data['left'], data['right'])
+        else:
+            robot.set_direction(direction=data['degree'], speed=data['distance'])
 
         return 'OK'
     return render_template('joystick.html')
