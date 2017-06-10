@@ -117,15 +117,16 @@
 
     function move(ev, nipple) {
       var id = nipple.instance.id;
-      console.log(nipple.direction.y);
+      console.log(nipple);
       var dir = nipple.direction.y;
+      var dist = nipple.distance;
 
       // left
       if (id === 0) {
         if (dir === 'up') {
-          data_left = 100;
+          data_left = dist;
         } else if (dir === 'down') {
-          data_left = -100;
+          data_left = dist*-1;
         };
         jQuery("#debug_left").html(data_left);
       };
@@ -133,9 +134,9 @@
       // right
       if (id === 1) {
         if (dir === 'up') {
-          data_right = 100;
+          data_right = dist;
         } else if (dir === 'down') {
-          data_right = -100;
+          data_right = dist*-1;
         };
         jQuery("#debug_right").html(data_right);
       };
