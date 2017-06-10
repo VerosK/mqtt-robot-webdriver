@@ -9,21 +9,52 @@
   </head>
   <body id="body">
    <script src="/static/nipplejs.min.js"></script>
+
+    <div id='row_1' class='row'>
+      <div id='cell_1_1' class='cell'>
+      </div>
+
+      <div id='cell_1_2' class='cell'>
+      </div>
+    </div>
+
+    <div id='row_2' class='row'>
+      <div id='cell_2_1' class='cell'>
+        <div id="debug_left" class="debug">
+        </div>
+      </div>
+
+      <div id='cell_2_2' class='cell'>
+        <div id="debug_right" class="debug">
+        </div>
+      </div>
+    </div>
+
    <script>
+
+    var elem_left = document.getElementById('cell_1_1');
+    var elem_right = document.getElementById('cell_1_2');
+    console.log(elem_left);
 
     var manager_left = nipplejs.create({
         color: '#00FFFF',
+        zone: elem_left,
         size: 200,
         mode: 'static',
         identifier: 0,
+        multitouch: true,
+        maxNumberOfNipples: 2,
         position: { left: '25%', top: '50%' },
     });
 
     var manager_right = nipplejs.create({
         color: '#00FFFF',
+        zone: elem_right,
         size: 200,
         mode: 'static',
         identifier: 1,
+        multitouch: true,
+        maxNumberOfNipples: 2,
         position: { left: '75%', top: '50%' },
     });
 
@@ -96,7 +127,7 @@
         } else if (dir === 'down') {
           data_left = -100;
         };
-        jQuery("#debug_left").html("<pre>"+JSON.stringify(data_left, null, 4)+"</pre>");
+        jQuery("#debug_left").html(data_left);
       };
 
       // right
@@ -106,20 +137,13 @@
         } else if (dir === 'down') {
           data_right = -100;
         };
-        jQuery("#debug_right").html("<pre>"+JSON.stringify(data_right, null, 4)+"</pre>");
+        jQuery("#debug_right").html(data_right);
       };
     }
 
     manager_left.on('start', start).on('end', stop).on('move', move);
     manager_right.on('start', start).on('end', stop).on('move', move);
-
   </script>
 
-    <div id="debug_left" class="debug">
-      <a href="https://yoannmoinet.github.io/nipplejs/">Nipple documentation</a>
-    </div>
-    <div id="debug_right" class="debug">
-      <a href="https://yoannmoinet.github.io/nipplejs/">Nipple documentation</a>
-    </div>
   </body>
 </html>
