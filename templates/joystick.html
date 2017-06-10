@@ -5,11 +5,11 @@
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0"/>
     <script src="/static/jquery.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin="anonymous"></script>
-  <link href='/static/style.css' rel='stylesheet' type='text/css' media='screen'>
+    <script src="/static/nipplejs.min.js"></script>
+    <link href='/static/style.css' rel='stylesheet' type='text/css' media='screen'>
   </head>
-  <body id="body">
-   <script src="/static/nipplejs.min.js"></script>
 
+  <body>
     <div id='row_1' class='row'>
       <div id='cell_1_1' class='cell'>
       </div>
@@ -30,121 +30,121 @@
       </div>
     </div>
 
-   <script>
+    <script>
+      function move(ev, nipple) {
+        var id = nipple.instance.id;
+        console.log(nipple);
+        var dir = nipple.direction.y;
+        var dist = nipple.distance;
 
-    var elem_left = document.getElementById('cell_1_1');
-    var elem_right = document.getElementById('cell_1_2');
-    console.log(elem_left);
+        // left
+        if (id === 0) {
+          if (dir === 'up') {
+            data_left = dist;
+          } else if (dir === 'down') {
+            data_left = dist*-1;
+          };
+          jQuery("#debug_left").html(data_left);
+        };
 
-    var manager_left = nipplejs.create({
-        color: '#00FFFF',
-        zone: elem_left,
-        size: 200,
-        mode: 'static',
-        identifier: 0,
-        multitouch: true,
-        maxNumberOfNipples: 2,
-        position: { left: '25%', top: '50%' },
-    });
-
-    var manager_right = nipplejs.create({
-        color: '#00FFFF',
-        zone: elem_right,
-        size: 200,
-        mode: 'static',
-        identifier: 1,
-        multitouch: true,
-        maxNumberOfNipples: 2,
-        position: { left: '75%', top: '50%' },
-    });
-
-    var is_active_left = false;
-    var is_active_right = false;
-
-    var data_left = 0;
-    var data_right = 0;
-
-    function stop(evt, nipple) {
-         var id = nipple.id;
-
-         // left
-         if (id === 0) {
-           is_active_left = false;
-           data_left = 0;
-         }
-
-         // right
-         if (id === 1) {
-           is_active_right = false;
-           data_right = 0;
-         }
+        // right
+        if (id === 1) {
+          if (dir === 'up') {
+            data_right = dist;
+          } else if (dir === 'down') {
+            data_right = dist*-1;
+          };
+          jQuery("#debug_right").html(data_right);
+        };
+      }
 
 
-         jQuery(".debug").css('background-color', 'green');
-    }
+      function start(evt, nipple) {
+        var id = nipple.id;
 
-    function updateDir() {
-      var direction = {left: data_left, right: data_right};
-      console.log(direction);
+        // left
+        if (id === 0) {
+          is_active_left = true;
+          jQuery("#debug_left").css('background-color', 'red');
+        };
 
-      jQuery.ajax('', {   // post to local page
-                type: 'POST',
-                data: direction,
-                dataType: 'json',
-                complete: function() {
-                   if (is_active_left) setTimeout(updateDir, 100);
-                },
+        // right
+        if (id === 1) {
+          is_active_right = true;
+          jQuery("#debug_right").css('background-color', 'red');
+        };
+
+        setTimeout(updateDir, 10);
+      }
+
+
+      function stop(evt, nipple) {
+           var id = nipple.id;
+
+           // left
+           if (id === 0) {
+             is_active_left = false;
+             data_left = 0;
+           }
+
+           // right
+           if (id === 1) {
+             is_active_right = false;
+             data_right = 0;
+           }
+
+
+           jQuery(".debug").css('background-color', 'green');
+      };
+
+      function updateDir() {
+        var direction = {left: data_left, right: data_right};
+        console.log(direction);
+
+        jQuery.ajax('', {   // post to local page
+                  type: 'POST',
+                  data: direction,
+                  dataType: 'json',
+                  complete: function() {
+                    if (is_active_left || is_active_right) {
+                      setTimeout(updateDir, 100);
+                    }
+                  },
+        });
+      }
+
+      var manager_left = nipplejs.create({
+          color: '#00FFFF',
+          zone: document.getElementById('cell_1_1'),
+          size: 200,
+          mode: 'static',
+          identifier: 0,
+          multitouch: true,
+          maxNumberOfNipples: 2,
+          position: { left: '25%', top: '50%' },
       });
-    }
 
-    function start(evt, nipple) {
-      var id = nipple.id;
+      var manager_right = nipplejs.create({
+          color: '#00FFFF',
+          zone: document.getElementById('cell_1_2'),
+          size: 200,
+          mode: 'static',
+          identifier: 1,
+          multitouch: true,
+          maxNumberOfNipples: 2,
+          position: { left: '75%', top: '50%' },
+      });
 
-      // left
-      if (id === 0) {
-        is_active_left = true;
-        jQuery("#debug_left").css('background-color', 'red');
-      };
+      var is_active_left = false;
+      var is_active_right = false;
 
-      // right
-      if (id === 1) {
-        is_active_right = true;
-        jQuery("#debug_right").css('background-color', 'red');
-      };
+      var data_left = 0;
+      var data_right = 0;
 
-      setTimeout(updateDir, 10);
-    }
+      manager_left.on('start', start).on('end', stop).on('move', move);
+      manager_right.on('start', start).on('end', stop).on('move', move);
 
-    function move(ev, nipple) {
-      var id = nipple.instance.id;
-      console.log(nipple);
-      var dir = nipple.direction.y;
-      var dist = nipple.distance;
-
-      // left
-      if (id === 0) {
-        if (dir === 'up') {
-          data_left = dist;
-        } else if (dir === 'down') {
-          data_left = dist*-1;
-        };
-        jQuery("#debug_left").html(data_left);
-      };
-
-      // right
-      if (id === 1) {
-        if (dir === 'up') {
-          data_right = dist;
-        } else if (dir === 'down') {
-          data_right = dist*-1;
-        };
-        jQuery("#debug_right").html(data_right);
-      };
-    }
-
-    manager_left.on('start', start).on('end', stop).on('move', move);
-    manager_right.on('start', start).on('end', stop).on('move', move);
-  </script>
+    </script>
 
   </body>
 </html>
