@@ -6,51 +6,119 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0"/>
     <script src="/static/jquery.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin="anonymous"></script>
   <link href='/static/style.css' rel='stylesheet' type='text/css' media='screen'>
-  </head>   
+  </head>
   <body id="body">
    <script src="/static/nipplejs.min.js"></script>
    <script>
-    var manager = nipplejs.create({
+
+    var manager_left = nipplejs.create({
         color: '#00FFFF',
         size: 200,
         mode: 'static',
         identifier: 0,
-        position: { left: '50%', top: '50%' },
+        position: { left: '25%', top: '50%' },
     });
-    var direction = {};
-    var is_active = false;
+
+    var manager_right = nipplejs.create({
+        color: '#00FFFF',
+        size: 200,
+        mode: 'static',
+        identifier: 1,
+        position: { left: '75%', top: '50%' },
+    });
+
+    var is_active_left = false;
+    var is_active_right = false;
+
+    var data_left = 0;
+    var data_right = 0;
+
     function stop(evt, nipple) {
-         is_active = false;
-         direction = {distance: 0, degree:0};
-	 jQuery("#debug").css('background-color', 'green');
+         var id = nipple.id;
+
+         // left
+         if (id === 0) {
+           is_active_left = false;
+           data_left = 0;
+         }
+
+         // right
+         if (id === 1) {
+           is_active_right = false;
+           data_right = 0;
+         }
+
+
+         jQuery(".debug").css('background-color', 'green');
     }
+
     function updateDir() {
-    console.log(direction);
-    jQuery.ajax('', {   // post to local page
-              type: 'POST', 
-              data: direction,
-              dataType: 'json',
-              complete: function() {
-                 if (is_active) setTimeout(updateDir, 100); },
-             });
+      var direction = {left: data_left, right: data_right};
+      console.log(direction);
+
+      jQuery.ajax('', {   // post to local page
+                type: 'POST',
+                data: direction,
+                dataType: 'json',
+                complete: function() {
+                   if (is_active_left) setTimeout(updateDir, 100);
+                },
+      });
     }
+
     function start(evt, nipple) {
-         is_active = true;
-        jQuery("#debug").css('background-color', 'red');
-         setTimeout(updateDir, 10);
+      var id = nipple.id;
+
+      // left
+      if (id === 0) {
+        is_active_left = true;
+        jQuery("#debug_left").css('background-color', 'red');
+      };
+
+      // right
+      if (id === 1) {
+        is_active_right = true;
+        jQuery("#debug_right").css('background-color', 'red');
+      };
+
+      setTimeout(updateDir, 10);
     }
+
     function move(ev, nipple) {
-         var k = nipple;
-         direction = {
-             distance: nipple.distance,
-             degree: 360 - ((nipple.angle.degree +270) % 360)
-         };
-         jQuery("#debug").html("<pre>"+JSON.stringify(direction, null, 4)+"</pre>");
+      var id = nipple.instance.id;
+      console.log(nipple.direction.y);
+      var dir = nipple.direction.y;
+
+      // left
+      if (id === 0) {
+        if (dir === 'up') {
+          data_left = 100;
+        } else if (dir === 'down') {
+          data_left = -100;
+        };
+        jQuery("#debug_left").html("<pre>"+JSON.stringify(data_left, null, 4)+"</pre>");
+      };
+
+      // right
+      if (id === 1) {
+        if (dir === 'up') {
+          data_right = 100;
+        } else if (dir === 'down') {
+          data_right = -100;
+        };
+        jQuery("#debug_right").html("<pre>"+JSON.stringify(data_right, null, 4)+"</pre>");
+      };
     }
-    manager.on('start', start).on('end', stop).on('move', move);
-  
+
+    manager_left.on('start', start).on('end', stop).on('move', move);
+    manager_right.on('start', start).on('end', stop).on('move', move);
+
   </script>
-    <div id="debug">
+
+    <div id="debug_left" class="debug">
+      <a href="https://yoannmoinet.github.io/nipplejs/">Nipple documentation</a>
+    </div>
+    <div id="debug_right" class="debug">
       <a href="https://yoannmoinet.github.io/nipplejs/">Nipple documentation</a>
     </div>
   </body>
