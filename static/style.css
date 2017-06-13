@@ -12,10 +12,40 @@ body {
 }
 
 .debug {
-    position: absolute;
-    bottom: 1px;
-    left: 2px;
-    width: 20em;
-    height: 6em;
-    background-color: #101010;
+    background-color: green;
+    text-align: center;
+}
+
+.row {
+    width: 100%;
+}
+
+#row_1 {
+    height: 90%;
+    clear: both;
+}
+
+#row_2 {
+    height: 9%;
+}
+
+.cell {
+    width: 49%;
+    height: 100%;
+}
+
+#cell_1_1 {
+    float: left;
+}
+
+#cell_1_2 {
+    float: right;
+}
+
+#cell_2_1 {
+    float: left;
+}
+
+#cell_2_2 {
+    float: right;
 }
