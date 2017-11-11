@@ -7,14 +7,18 @@
 <body>
 <h2>Robots</h2>
 <table border="1">
-    <tr><td>id</td><td>State</td></tr>
+    <tr><th>name</th>
+        <th>Id</th><th>State</th></tr>
 {% for robot in robots %}
     <tr>
-    <th><a href="/robot/{{ robot.id }}/">{{ robot.id }}</a></th>
-    <td>{{ robot.name }}</td>
+    <td style="padding: 0.5em; background-color: {{ robot.alive_color }}">
+	<a href="/robot/{{ robot.id }}/">{{ robot.name }}</a></td>
+    <td>{{ robot.id }}</td>
     <td>{{ robot.last_seen_str }}</td>
     </tr>
 {% endfor %}
 </table>
+
+<p><a href="https://github.com/VerosK/mqtt-robot-webdriver">Source code</a></p>
 </body>
 </html>

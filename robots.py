@@ -125,6 +125,18 @@ class Robot:
             return 'before {} minutes'.format(delta.seconds // 60)
         return 'disconnected (probably)'
 
+    @property
+    def alive_color(self):
+        if not self.last_seen:
+            return '#FFFFFF'
+        delta = datetime.now() - self.last_seen
+        print(self.last_seen, delta)
+        if delta < timedelta(seconds=60):
+            return '#20FF20'
+        if delta < timedelta(minutes=30):
+            return '#008000'
+        return '#ffffff'
+
     def set_direction(self, direction, speed):
         """
         Send motors to robot
