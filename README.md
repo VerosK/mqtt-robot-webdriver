@@ -1,6 +1,17 @@
 # webdriver
 
-How to start:
+## Requirements
+
+On Debian/Ubuntu install python libraries:
+```bash
+sudo apt-get install python-configparser python-flask python-paho-mqtt
+```
+
+## Configuration
+
+Edit `driver.ini` and configure your MQTT server (default is broker.hivemq.com)
+
+## How to start:
 
  * set-up mqtt broker (or use public)
 
