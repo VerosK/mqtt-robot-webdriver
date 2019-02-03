@@ -43,6 +43,11 @@ def robot_list():
     global robot_group
     return render_template('index.html', robots=robot_group.robot_list())
 
+@app.route('/robot/')
+def catch_all():
+    global robot_group
+    return render_template('index.html', robots=robot_group.robot_list())
+
 @app.route('/robot/<robot_id>/', methods=['GET', 'POST'])
 def robot_page(robot_id):
     global robot_group
