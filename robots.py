@@ -24,7 +24,7 @@ class RobotGroup:
             mqtt_client.username_pw_set(mqtt_config['username'],
                                         mqtt_config['password'])
         mqtt_client.connect(host=mqtt_config['host'])
-        logger.info("MQTT connecting to %s", mqtt_config['host'])
+        logger.info("MQTT connecting to '%s'", mqtt_config['host'])
         mqtt_client.subscribe('/robot/+/$online$')
         mqtt_client.subscribe('/robot/+/$name$')
 
